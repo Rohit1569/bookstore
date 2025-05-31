@@ -36,44 +36,44 @@ class UserService {
 
 
   // //getAllUser
-  // async getAllUsers(settingsConfig, query) {
-  //   const t = await startTransaction()
-  //   try {
-  //     const logger = settingsConfig.logger;
-  //     logger.info(`[UserService] : Inside getAllUsers`);
-  //     // const myWhereClause = parseFilterQueries(queryParams, userConfig.filters)
-  //     let selectArray = parseSelectFields(query, userConfig.fieldMapping)
-  //     if (!selectArray) {
-  //       selectArray = Object.values(userConfig.fieldMapping)
-  //     }
+  async getAllUsers(settingsConfig, query) {
+    const t = await startTransaction()
+    try {
+      const logger = settingsConfig.logger;
+      logger.info(`[UserService] : Inside getAllUsers`);
+      // const myWhereClause = parseFilterQueries(queryParams, userConfig.filters)
+      let selectArray = parseSelectFields(query, userConfig.fieldMapping)
+      if (!selectArray) {
+        selectArray = Object.values(userConfig.fieldMapping)
+      }
 
-  //     const includeQuery = query.include || []
-  //     let associations = []
-  //     if (query.include) {
-  //       delete query.include
-  //     }
+      const includeQuery = query.include || []
+      let associations = []
+      if (query.include) {
+        delete query.include
+      }
 
-  //     // if (includeQuery?.length > 0) {
-  //     //   associations = this.#createAssociations(includeQuery, selectArray)
-  //     // }
-  //     // limitOffset = parseLimitAndOffset(queryParams)
+      // if (includeQuery?.length > 0) {
+      //   associations = this.#createAssociations(includeQuery, selectArray)
+      // }
+      // limitOffset = parseLimitAndOffset(queryParams)
 
-  //     console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>", userConfig)
-  //     const { count, rows } = await userConfig.model.findAndCountAll({
-  //       transaction: t,
-  //       attributes: selectArray,
-  //       ...parseFilterQueries(query, userConfig.associations.userAccountFilter),
-  //       ...preloadAssociations(associations),
-  //       ...parseLimitAndOffset(query)
-  //     });
+      console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>", userConfig)
+      const { count, rows } = await userConfig.model.findAndCountAll({
+        transaction: t,
+        attributes: selectArray,
+        ...parseFilterQueries(query, userConfig.associations.userAccountFilter),
+        
+        ...parseLimitAndOffset(query)
+      });
 
-  //     t.commit()
-  //     return { count, rows }
-  //   } catch (error) {
-  //     t.rollback()
-  //     throw error
-  //   }
-  // }
+      t.commit()
+      return { count, rows }
+    } catch (error) {
+      t.rollback()
+      throw error
+    }
+  }
 
   //create user
   async createUser(body) {

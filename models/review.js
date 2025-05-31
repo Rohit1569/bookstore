@@ -5,7 +5,7 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Review extends Model {
     static associate(models) {
-      Review.belongsTo(models.User, { foreignKey: 'userId', as: 'user' });
+      Review.belongsTo(models.user, { foreignKey: 'userId', as: 'user' });
       Review.belongsTo(models.Book, { foreignKey: 'bookId', as: 'book' });
     }
   }
@@ -13,7 +13,8 @@ module.exports = (sequelize, DataTypes) => {
   Review.init({
     id: {
       type: DataTypes.UUID,
-      primaryKey: true
+      primaryKey: true,
+      defaultValue: DataTypes.UUIDV4
     },
     userId: {
       type: DataTypes.UUID,
@@ -36,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     sequelize,
-    modelName: 'review',
+    modelName: 'Review',
     tableName: 'reviews',
     underscored: true,
     timestamps: true

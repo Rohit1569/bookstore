@@ -4,51 +4,92 @@
       "route": "/api/v1/user",
       "method": "GET",
       "controller": "../components/user/controller/UserController",
-      "secured":false,
-      "action":"getAllUsers"
+      "secured": false,
+      "action": "getAllUsers"
     },
-
-     {
+    {
       "route": "/api/v1/user/create",
       "method": "POST",
       "controller": "../components/user/controller/UserController",
-       "secured":false,
-      "action":"add"
+      "secured": false,
+      "action": "add"
     },
-     {
+    {
       "route": "/api/v1/user/:userId",
       "method": "GET",
       "controller": "../components/user/controller/UserController",
-       "secured":false,
-      "action":"getOne"
+      "secured": false,
+      "action": "getOne"
     },
-  {
+    {
       "route": "/api/v1/user/:userId",
       "method": "DELETE",
       "controller": "../components/user/controller/UserController",
-       "secured":false,
-      "action":"deleteUser"
-    } ,
-     {
+      "secured": false,
+      "action": "deleteUser"
+    },
+    {
       "route": "/api/v1/user/:userId",
       "method": "PUT",
       "controller": "../components/user/controller/UserController",
-       "secured":false,
-      "action":"updateUser"  
-      },
-      {
-        "route": "/api/v1/login",
-       "method": "POST",
-       "controller":"../components/user/controller/UserController",
-       "secured":false,
-       "action": "login"
-     },
-     {  "route": "/api/v1/logout",
+      "secured": false,
+      "action": "updateUser"
+    },
+    {
+      "route": "/api/v1/login",
+      "method": "POST",
+      "controller": "../components/user/controller/UserController",
+      "secured": false,
+      "action": "login"
+    },
+    {
+      "route": "/api/v1/logout",
       "method": "POST",
       "controller": "../components/user/controller/UserController",
       "secured": false,
       "action": "logout"
+    },
+    {
+      "route": "/api/v1/books",
+      "method": "POST",
+      "controller": "../components/book/controller/bookController",
+      "secured": false,
+      "action": "addBook"
+    },
+    {
+      "route": "/api/v1/books",
+      "method": "GET",
+      "controller": "../components/book/controller/bookController",
+      "secured": false,
+      "action": "getAllBooks"
+    },
+    {
+      "route": "/api/v1/books/:bookId",
+      "method": "GET",
+      "controller": "../components/book/controller/bookController",
+      "secured": false,
+      "action": "getBookById"
+    },
+    {
+      "route": "/api/v1/books/:id/reviews",
+      "method": "POST",
+      "controller": "../components/review/controller/reviewController",
+      "secured": false,
+      "action": "submitReview"
+    },
+    {
+      "route": "/api/v1/reviews/:id",
+      "method": "PUT",
+      "controller": "../components/review/controller/reviewController",
+      "secured": true,
+      "action": "updateReview"
+    },
+    {
+      "route": "/api/v1/reviews/:id",
+      "method": "DELETE",
+      "controller": "../components/review/controller/reviewController",
+      "secured": true,
+      "action": "deleteReview"
     }
-     ]
+  ]
 }
-
