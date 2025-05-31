@@ -1,0 +1,54 @@
+{
+  "routes": [
+    {
+      "route": "/api/v1/user",
+      "method": "GET",
+      "controller": "../components/user/controller/UserController",
+      "secured":false,
+      "action":"getAllUsers"
+    },
+
+     {
+      "route": "/api/v1/user/create",
+      "method": "POST",
+      "controller": "../components/user/controller/UserController",
+       "secured":false,
+      "action":"add"
+    },
+     {
+      "route": "/api/v1/user/:userId",
+      "method": "GET",
+      "controller": "../components/user/controller/UserController",
+       "secured":false,
+      "action":"getOne"
+    },
+  {
+      "route": "/api/v1/user/:userId",
+      "method": "DELETE",
+      "controller": "../components/user/controller/UserController",
+       "secured":false,
+      "action":"deleteUser"
+    } ,
+     {
+      "route": "/api/v1/user/:userId",
+      "method": "PUT",
+      "controller": "../components/user/controller/UserController",
+       "secured":false,
+      "action":"updateUser"  
+      },
+      {
+        "route": "/api/v1/login",
+       "method": "POST",
+       "controller":"../components/user/controller/UserController",
+       "secured":false,
+       "action": "login"
+     },
+     {  "route": "/api/v1/logout",
+      "method": "POST",
+      "controller": "../components/user/controller/UserController",
+      "secured": false,
+      "action": "logout"
+    }
+     ]
+}
+
