@@ -36,38 +36,38 @@ class UserService {
 
 
   // //getAllUser
+  async getAllUsers(settingsConfig, query) {
+    const t = await startTransaction()
+    try {
+      const logger = settingsConfig.logger;
+      logger.info(`[UserService] : Inside getAllUsers`);
+      let selectArray = parseSelectFields(query, userConfig.fieldMapping)
+      if (!selectArray) {
+        selectArray = Object.values(userConfig.fieldMapping)
+      }
 
-async getBooks(settingsConfig, query) {
-  const transaction = await startTransaction();
-  try {
-    const logger = settingsConfig.logger;
-    logger.info(`[BookService] : Inside getBooks`);
+      const includeQuery = query.include || []
+      let associations = []
+      if (query.include) {
+        delete query.include
+      }
 
-    let selectArray = parseSelectFields(query, bookConfig.fieldMapping);
-    if (!selectArray) {
-      selectArray = Object.values(bookConfig.fieldMapping);
+      // if (includeQuery?.length > 0) {
+      //   associations = this.#createAssociations(includeQuery, selectArray)
+      // }
+      const { count, rows } = await userConfig.model.findAndCountAll({
+        transaction: t,
+        attributes: selectArray,
+        ...parseFilterQueries(query, userConfig.associations.userAccountFilter),
+      });
+
+      t.commit()
+      return { count, rows }
+    } catch (error) {
+      t.rollback()
+      throw error
     }
-
-  
-    const limit = query.limit ? parseInt(query.limit, 10) : 10;  
-    const offset = query.offset ? parseInt(query.offset, 10) : 0;
-
-    const { count, rows } = await bookConfig.model.findAndCountAll({
-      transaction,
-      attributes: selectArray,
-      ...parseFilterQueries(query, bookConfig.filters),
-      limit,
-      offset,
-    });
-
-    await transaction.commit();
-    return { count, rows };
-  } catch (error) {
-    await transaction.rollback();
-    throw error;
   }
-}
-
 
   //create user
   async createUser(body) {
