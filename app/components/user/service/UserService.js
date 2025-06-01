@@ -41,7 +41,6 @@ class UserService {
     try {
       const logger = settingsConfig.logger;
       logger.info(`[UserService] : Inside getAllUsers`);
-      // const myWhereClause = parseFilterQueries(queryParams, userConfig.filters)
       let selectArray = parseSelectFields(query, userConfig.fieldMapping)
       if (!selectArray) {
         selectArray = Object.values(userConfig.fieldMapping)
@@ -56,15 +55,10 @@ class UserService {
       // if (includeQuery?.length > 0) {
       //   associations = this.#createAssociations(includeQuery, selectArray)
       // }
-      // limitOffset = parseLimitAndOffset(queryParams)
-
-      console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>", userConfig)
       const { count, rows } = await userConfig.model.findAndCountAll({
         transaction: t,
         attributes: selectArray,
         ...parseFilterQueries(query, userConfig.associations.userAccountFilter),
-        
-        ...parseLimitAndOffset(query)
       });
 
       t.commit()

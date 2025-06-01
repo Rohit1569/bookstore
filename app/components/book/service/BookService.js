@@ -13,7 +13,6 @@ class BookService {
     try {
       const dbBook = await bookConfig.model.create(body, { transaction });
       await transaction.commit();
-      console.log(dbBook);
       return dbBook;
     } catch (error) {
       await transaction.rollback();
@@ -22,31 +21,36 @@ class BookService {
   }
 
   // Get all books (with pagination + filters)
-  async getBooks(settingsConfig, query) {
-    const transaction = await startTransaction();
-    try {
-      const logger = settingsConfig.logger;
-      logger.info(`[BookService] : Inside getBooks`);
+async getBooks(settingsConfig, query) {
+  const transaction = await startTransaction();
+  try {
+    const logger = settingsConfig.logger;
+    logger.info(`[BookService] : Inside getBooks`);
 
-      let selectArray = parseSelectFields(query, bookConfig.fieldMapping);
-      if (!selectArray) {
-        selectArray = Object.values(bookConfig.fieldMapping);
-      }
-
-      const { count, rows } = await bookConfig.model.findAndCountAll({
-        transaction,
-        attributes: selectArray,
-        ...parseFilterQueries(query, bookConfig.filters),
-        ...parseLimitAndOffset(query),
-      });
-
-      await transaction.commit();
-      return { count, rows };
-    } catch (error) {
-      await transaction.rollback();
-      throw error;
+    let selectArray = parseSelectFields(query, bookConfig.fieldMapping);
+    if (!selectArray) {
+      selectArray = Object.values(bookConfig.fieldMapping);
     }
+
+    
+    const limit = query.limit ? parseInt(query.limit, 10) : 10; 
+    const offset = query.offset ? parseInt(query.offset, 10) : 0;
+    const { count, rows } = await bookConfig.model.findAndCountAll({
+      transaction,
+      attributes: selectArray,
+      ...parseFilterQueries(query, bookConfig.filters),
+      limit,
+      offset,
+    });
+
+    await transaction.commit();
+    return { count, rows };
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
   }
+}
+
 
   // Get book by ID (with average rating, optional reviews)
   async getBookById(bookId) {

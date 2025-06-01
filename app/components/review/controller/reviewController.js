@@ -11,7 +11,6 @@ class ReviewController {
       const userId = req.body.userId
       const bookId = req.params.id;
       const body = req.body;
-console.log(userId,bookId,body);
 
       const review = await this.reviewService.submitReview(userId, bookId, body);
       return res.status(StatusCodes.CREATED).json(review);

@@ -15,16 +15,25 @@ class UserController {
     try {
       const logger = settingsConfig.logger;
       logger.info(`[UserController] : Inside login`);
-
+  
       const { username, password } = req.body;
       const token = await this.userService.authenticateUser(settingsConfig, username, password);
-      res.cookie(process.env.AUTH_COOKIE_NAME, token);
-      res.status(StatusCodes.OK).json("Login Done")
+  
+      
+      res.cookie(process.env.AUTH_COOKIE_NAME, token, {
+        httpOnly: true, 
+        secure: process.env.NODE_ENV === 'local',
+        sameSite: 'lax', 
+        maxAge: 60 * 60 * 1000, 
+      });
+  
+     
+      res.status(StatusCodes.OK).json({ message: "Login Done", token });
     } catch (error) {
-      next(error)
+      next(error);
     }
   }
-
+  
   async logout(settingsConfig, req, res, next) {
     try {
       const logger = settingsConfig.logger;

@@ -1,9 +1,8 @@
-const { checkJwtHS256, isAdmin, isUser } = require("../middleware/authService");
-const { roleBasedQueryInjector } = require("../middleware/prospect")
+const { isAuthenticated } = require("../middleware/authService");
 
 /* eslint-disable global-require */
 class RouteConfig {
-  constructor() { }
+  constructor() {}
 
   loadRouteConfig() {
     let config;
@@ -22,8 +21,6 @@ class RouteConfig {
   }
 
   loadController(routeItem) {
-    let controller;
-
     if (!routeItem || !routeItem.controller) {
       throw new Error(
         'Undefined "controller" property in "lib/configs/route.config.json"'
@@ -32,14 +29,12 @@ class RouteConfig {
 
     try {
       // eslint-disable-next-line import/no-dynamic-require
-
-      console.log("routeItem", routeItem)
-      controller = require(routeItem.controller);
+      console.log("routeItem", routeItem);
+      const controller = require(routeItem.controller);
+      return controller;
     } catch (e) {
       throw new Error(`Unable to load ${routeItem.controller}: ${e}`);
     }
-
-    return controller;
   }
 
   getRoute(routeItem) {
@@ -81,11 +76,9 @@ class RouteConfig {
     }
     return routeItem.action;
   }
+
   getSecured(routeItem) {
     return !!(routeItem?.secured ?? true);
-  }
-  getAccessRole(routeItem) {
-    return !!(routeItem?.isAdminRoute ?? false);
   }
 
   registerRoute(
@@ -95,24 +88,22 @@ class RouteConfig {
     method,
     action,
     secured,
-    isAdminRoute,
     settingsConfig
   ) {
+    const middlewares = [];
+
     if (secured) {
-      if (isAdminRoute) {
-        application.route(route)[method]((req, res, next) => {
-          isAdmin(settingsConfig, req, res, next)
-        });
-      }
-      if (!isAdminRoute) {
-        application.route(route)[method]((req, res, next) => {
-          isUser(settingsConfig, req, res, next)
-        });
-      }
+      // Apply generic isAuthenticated middleware for all secured routes
+      middlewares.push((req, res, next) =>
+        isAuthenticated(settingsConfig, req, res, next)
+      );
     }
-    application.route(route)[method]((req, res, next) => {
-      controller[action](settingsConfig, req, res, next);
-    });
+
+    middlewares.push((req, res, next) =>
+      controller[action](settingsConfig, req, res, next)
+    );
+
+    application.route(route)[method](...middlewares);
   }
 
   createConfigRoute(application, settingsConfig) {
@@ -132,7 +123,6 @@ class RouteConfig {
       const method = this.getMethod(routeItem);
       const action = this.getAction(routeItem);
       const secured = this.getSecured(routeItem);
-      const isAdminRoute = this.getAccessRole(routeItem)
 
       this.registerRoute(
         application,
@@ -141,7 +131,6 @@ class RouteConfig {
         method,
         action,
         secured,
-        isAdminRoute,
         settingsConfig
       );
     }
