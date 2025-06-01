@@ -36,44 +36,38 @@ class UserService {
 
 
   // //getAllUser
-  async getAllUsers(settingsConfig, query) {
-    const t = await startTransaction()
-    try {
-      const logger = settingsConfig.logger;
-      logger.info(`[UserService] : Inside getAllUsers`);
-      // const myWhereClause = parseFilterQueries(queryParams, userConfig.filters)
-      let selectArray = parseSelectFields(query, userConfig.fieldMapping)
-      if (!selectArray) {
-        selectArray = Object.values(userConfig.fieldMapping)
-      }
 
-      const includeQuery = query.include || []
-      let associations = []
-      if (query.include) {
-        delete query.include
-      }
+async getBooks(settingsConfig, query) {
+  const transaction = await startTransaction();
+  try {
+    const logger = settingsConfig.logger;
+    logger.info(`[BookService] : Inside getBooks`);
 
-      // if (includeQuery?.length > 0) {
-      //   associations = this.#createAssociations(includeQuery, selectArray)
-      // }
-      // limitOffset = parseLimitAndOffset(queryParams)
-
-      console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>", userConfig)
-      const { count, rows } = await userConfig.model.findAndCountAll({
-        transaction: t,
-        attributes: selectArray,
-        ...parseFilterQueries(query, userConfig.associations.userAccountFilter),
-        
-        ...parseLimitAndOffset(query)
-      });
-
-      t.commit()
-      return { count, rows }
-    } catch (error) {
-      t.rollback()
-      throw error
+    let selectArray = parseSelectFields(query, bookConfig.fieldMapping);
+    if (!selectArray) {
+      selectArray = Object.values(bookConfig.fieldMapping);
     }
+
+  
+    const limit = query.limit ? parseInt(query.limit, 10) : 10;  
+    const offset = query.offset ? parseInt(query.offset, 10) : 0;
+
+    const { count, rows } = await bookConfig.model.findAndCountAll({
+      transaction,
+      attributes: selectArray,
+      ...parseFilterQueries(query, bookConfig.filters),
+      limit,
+      offset,
+    });
+
+    await transaction.commit();
+    return { count, rows };
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
   }
+}
+
 
   //create user
   async createUser(body) {
